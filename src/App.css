@@ -1,0 +1,22 @@
+.App {
+  text-align: center;
+}
+
+.main-title {
+  background-color: #0066cc;
+  color: white;
+  padding: 10px 30px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 20px auto;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+main {
+  padding: 20px;
+}
+
+.App-header {
+  display: none;
+} 
