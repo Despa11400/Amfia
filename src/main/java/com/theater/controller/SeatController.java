@@ -11,95 +11,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/seats")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class SeatController {
     
     @Autowired
     private SupabaseService supabaseService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllSeats() {
-        try {
-            System.out.println("Getting all seats...");
-            List<Seat> seats = supabaseService.getAllSeats();
-            System.out.println("Found " + seats.size() + " seats");
-            return ResponseEntity.ok(seats);
-        } catch (Exception e) {
-            System.out.println("Error in getAllSeats: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(500)
-                .body("Error getting seats: " + e.getMessage());
-        }
+    @GetMapping("/seats")
+    public ResponseEntity<List<Seat>> getSeats() throws Exception {
+        return ResponseEntity.ok(supabaseService.getAllSeats());
     }
 
-    @PostMapping("/reserve")
-    public ResponseEntity<?> reserveSeats(@RequestBody Reservation reservation) {
-        try {
-            System.out.println("Received reservation request:");
-            System.out.println("Customer Name: " + reservation.getCustomerName());
-            System.out.println("Student ID: " + reservation.getStudentId());
-            System.out.println("Faculty: " + reservation.getFaculty());
-            System.out.println("Selected Seats: " + reservation.getSeats().size());
-
-            // Check if student already has a reservation
-            if (supabaseService.hasExistingReservation(reservation.getStudentId())) {
-                return ResponseEntity.status(400)
-                    .body("Error: You already have a reservation. Only one seat per student is allowed.");
-            }
-
-            // Check if trying to reserve multiple seats
-            if (reservation.getSeats().size() > 1) {
-                return ResponseEntity.status(400)
-                    .body("Error: You can only reserve one seat at a time.");
-            }
-            
-            supabaseService.reserveSeats(reservation);
-            return ResponseEntity.ok().body("Reservation successful");
-        } catch (Exception e) {
-            System.out.println("Error in reserveSeats: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                .body("Error reserving seats: " + e.getMessage());
-        }
+    @PostMapping("/seats/reserve")
+    public ResponseEntity<?> reserveSeats(@RequestBody Reservation reservation) throws Exception {
+        supabaseService.reserveSeats(reservation);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/clear-all")
-    public ResponseEntity<?> clearAllReservations(@RequestHeader("Admin-Password") String password) {
-        try {
-            if (!SupabaseConfig.ADMIN_PASSWORD.equals(password)) {
-                return ResponseEntity.status(403).body("Unauthorized: Invalid admin password");
-            }
-            
+    @PostMapping("/seats/cancel")
+    public ResponseEntity<?> cancelReservation(@RequestBody CancelRequest request) throws Exception {
+        System.out.println("Attempting to cancel reservation for seat: " + request.getSeatId());
+        System.out.println("Student ID provided: " + request.getStudentId());
+        
+        boolean isOwner = supabaseService.verifyReservationOwnership(request.getSeatId(), request.getStudentId());
+        System.out.println("Is owner verification result: " + isOwner);
+        
+        if (isOwner) {
+            supabaseService.cancelReservation(request.getSeatId());
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(403).body("Unauthorized: Student ID does not match reservation");
+    }
+
+    @PostMapping("/seats/clear-all")
+    public ResponseEntity<?> clearAll(@RequestHeader("Admin-Password") String password) throws Exception {
+        System.out.println("Received password length: " + password.length());
+        System.out.println("Expected password length: " + SupabaseConfig.ADMIN_PASSWORD.length());
+        System.out.println("Received password bytes: " + password.getBytes("UTF-8"));
+        System.out.println("Expected password bytes: " + SupabaseConfig.ADMIN_PASSWORD.getBytes("UTF-8"));
+        
+        // Try with explicit string comparison
+        boolean matches = password.equals(SupabaseConfig.ADMIN_PASSWORD);
+        System.out.println("Password matches: " + matches);
+        
+        if (matches) {
             supabaseService.clearAllReservations();
-            return ResponseEntity.ok("All reservations cleared successfully");
-        } catch (Exception e) {
-            System.out.println("Error in clearAllReservations: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                .body("Error clearing reservations: " + e.getMessage());
+            return ResponseEntity.ok().build();
         }
+        return ResponseEntity.status(403).body("Invalid admin password");
     }
 
-    @PostMapping("/cancel")
-    public ResponseEntity<?> cancelReservation(@RequestBody CancelRequest request) {
-        try {
-            System.out.println("\nReceived cancel request:");
-            System.out.println("Seat ID: " + request.getSeatId());
-            System.out.println("Student ID: " + request.getStudentId());
-            
-            if (supabaseService.verifyReservationOwnership(request.getSeatId(), request.getStudentId())) {
-                supabaseService.cancelReservation(request.getSeatId());
-                return ResponseEntity.ok("Reservation cancelled successfully");
-            } else {
-                return ResponseEntity.status(403)
-                    .body("Unauthorized: Student ID does not match reservation");
-            }
-        } catch (Exception e) {
-            System.out.println("Error in cancelReservation: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                .body("Error cancelling reservation: " + e.getMessage());
-        }
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Seat API is working!");
     }
 } 

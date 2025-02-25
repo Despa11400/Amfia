@@ -33,8 +33,9 @@
 }
 
 .seat.selected {
-  background-color: #4CAF50;
-  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ff0000;
+  border: 2px solid #ff0000;
 }
 
 .theater-booking {
@@ -132,12 +133,6 @@
 .seat:hover:not(.booked) {
     background-color: #e0e0e0;
     transform: scale(1.1);
-}
-
-.seat.selected {
-    background-color: #4CAF50;
-    color: white;
-    border-color: #45a049;
 }
 
 .seat.booked {
@@ -285,8 +280,35 @@
 
 /* Update legend transparency */
 .legend {
-    background-color: transparent;
-    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px auto;
     padding: 15px;
-    margin: 10px 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    max-width: 400px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-item .seat {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+}
+
+.legend-item span {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.legend .seat.selected {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ff0000;
+    border: 2px solid #ff0000;
 } 

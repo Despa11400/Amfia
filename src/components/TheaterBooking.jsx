@@ -3,6 +3,8 @@ import axios from 'axios';
 import './TheaterBooking.css';
 import './Header.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 const TheaterBooking = () => {
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
@@ -65,21 +67,12 @@ const TheaterBooking = () => {
     const fetchSeats = async () => {
         try {
             console.log('Fetching seats from backend...');
-            const response = await axios.get('/api/seats', {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-            console.log('Response:', response);
+            const response = await axios.get(`${API_URL}/api/seats`);
+            console.log('Received seats:', response.data);
             setSeats(response.data);
             setLoading(false);
         } catch (err) {
-            console.error('Error details:', {
-                message: err.message,
-                response: err.response,
-                request: err.request
-            });
+            console.error('Error details:', err);
             setError(err.message);
             setLoading(false);
         }
@@ -99,30 +92,26 @@ const TheaterBooking = () => {
         const studentId = prompt("Унесите ваш број индекса да откажете резервацију:");
         if (!studentId) return;
 
-        const cleanStudentId = studentId.trim();
-
         try {
-            const response = await axios.post(
-                '/api/seats/cancel', 
-                {
-                    seatId: seat.id,
-                    studentId: cleanStudentId
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            
-            alert('Резервација је успешно отказана!');
-            fetchSeats();
-        } catch (err) {
-            if (err.response?.status === 403) {
-                alert('Неауторизовано: Број индекса се не подудара са резервацијом');
-            } else {
-                alert('Грешка при отказивању резервације: ' + (err.response?.data || err.message));
+            console.log('Attempting to cancel reservation:', {
+                seatId: seat.id,
+                studentId: studentId,
+                currentSeatInfo: seat
+            });
+
+            const response = await axios.post(`${API_URL}/api/seats/cancel`, {
+                seatId: seat.id,
+                studentId: studentId
+            });
+
+            if (response.status === 200) {
+                alert('Резервација је успешно отказана!');
+                fetchSeats();  // Refresh the seats display
             }
+        } catch (err) {
+            console.error('Cancel reservation error:', err.response?.data || err.message);
+            alert('Грешка при отказивању резервације: ' + 
+                  (err.response?.data || 'Број индекса се не подудара са резервацијом'));
         }
     };
 
@@ -137,8 +126,7 @@ const TheaterBooking = () => {
         };
 
         try {
-            const response = await axios.post('/api/seats/reserve', reservation);
-            console.log('Reservation response:', response);
+            const response = await axios.post(`${API_URL}/api/seats/reserve`, reservation);
             alert('Резервација је успешно извршена!');
             fetchSeats();
             setSelectedSeats([]);
@@ -146,16 +134,7 @@ const TheaterBooking = () => {
             setStudentId('');
             setFaculty('');
         } catch (err) {
-            console.error('Error details:', {
-                message: err.message,
-                response: err.response,
-                data: err.response?.data
-            });
-            if (err.response?.status === 400) {
-                alert(err.response.data);
-            } else {
-                alert('Грешка при резервацији: ' + (err.response?.data || err.message));
-            }
+            alert('Грешка при резервацији: ' + err.message);
         }
     };
 
@@ -163,28 +142,32 @@ const TheaterBooking = () => {
         const adminPassword = prompt("Унесите администраторску лозинку:");
         if (!adminPassword) return;
 
+        console.log('Password being sent:', adminPassword);
+        console.log('Password length:', adminPassword.length);
+
         if (window.confirm('Да ли сте сигурни да желите да обришете све резервације? Ова акција се не може поништити.')) {
             try {
-                await axios.post('/api/seats/clear-all', null, {
+                const response = await axios.post(`${API_URL}/api/seats/clear-all`, null, {
                     headers: {
-                        'Admin-Password': adminPassword
+                        'Admin-Password': adminPassword.trim()
                     }
                 });
                 alert('Све резервације су успешно обрисане!');
                 fetchSeats();
             } catch (err) {
-                if (err.response?.status === 403) {
-                    alert('Неауторизовано: Погрешна администраторска лозинка');
-                } else {
-                    alert('Грешка при брисању резервација: ' + (err.response?.data || err.message));
-                }
+                console.error('Clear all error:', err);
+                console.error('Response data:', err.response?.data);
+                console.error('Password that failed:', adminPassword);
+                alert('Грешка при брисању резервација: ' + 
+                      (err.response?.data || 'Неисправна администраторска лозинка'));
             }
         }
     };
 
     const toggleAdminControls = (e) => {
-        if (e.ctrlKey && e.altKey && e.key === 'A') {  // Ctrl + Alt + A
+        if (e.ctrlKey && e.altKey && (e.key === 'A' || e.key === 'a')) {
             setShowAdminControls(prev => !prev);
+            console.log('Admin controls toggled:', !showAdminControls);
         }
     };
 

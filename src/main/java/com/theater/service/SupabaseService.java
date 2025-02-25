@@ -10,11 +10,15 @@ import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class SupabaseService {
     private final String url;
     private final Properties props;
+
+    @Autowired
+    private SupabaseConfig supabaseConfig;
 
     public SupabaseService() {
         this.url = String.format("jdbc:postgresql://%s:%s/%s",
@@ -148,9 +152,7 @@ public class SupabaseService {
             }
             System.out.println("Total seats found: " + seats.size());
             return seats;
-        } catch (SQLException e) {
-            System.out.println("Error getting seats: " + e.getMessage());
-            System.out.println("SQL State: " + e.getSQLState());
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
@@ -223,6 +225,7 @@ public class SupabaseService {
     }
 
     public boolean verifyReservationOwnership(String seatId, String studentId) throws Exception {
+        System.out.println("Verifying ownership - Seat ID: " + seatId + ", Student ID: " + studentId);
         try (Connection conn = DriverManager.getConnection(url, props)) {
             String sql = "SELECT student_id FROM seats WHERE id::text = ? AND booked = true";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -231,8 +234,10 @@ public class SupabaseService {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String reservedStudentId = rs.getString("student_id");
+                System.out.println("Found reservation - Reserved by student: " + reservedStudentId);
                 return studentId.equals(reservedStudentId);
             }
+            System.out.println("No reservation found for seat");
             return false;
         }
     }
