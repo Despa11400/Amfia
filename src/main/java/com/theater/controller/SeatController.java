@@ -5,6 +5,8 @@ import com.theater.model.Reservation;
 import com.theater.model.CancelRequest;
 import com.theater.service.SupabaseService;
 import com.theater.config.SupabaseConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +17,22 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class SeatController {
     
+    private static final Logger logger = LoggerFactory.getLogger(SeatController.class);
+
     @Autowired
     private SupabaseService supabaseService;
 
     @GetMapping("/seats")
     public ResponseEntity<List<Seat>> getSeats() throws Exception {
-        return ResponseEntity.ok(supabaseService.getAllSeats());
+        logger.info("Fetching all seats");
+        try {
+            List<Seat> seats = supabaseService.getAllSeats();
+            logger.info("Successfully fetched {} seats", seats.size());
+            return ResponseEntity.ok(seats);
+        } catch (Exception e) {
+            logger.error("Error fetching seats", e);
+            throw e;
+        }
     }
 
     @PostMapping("/seats/reserve")
@@ -64,6 +76,7 @@ public class SeatController {
 
     @GetMapping("/test")
     public String test() {
+        logger.info("Test endpoint called");
         return "Backend is working!";
     }
 } 

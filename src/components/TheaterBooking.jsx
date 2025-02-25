@@ -3,7 +3,7 @@ import axios from 'axios';
 import './TheaterBooking.css';
 import './Header.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://amfiabackend.onrender.com';
+const API_URL = 'https://amfiabackend.onrender.com';
 
 const TheaterBooking = () => {
     const [seats, setSeats] = useState([]);
@@ -58,12 +58,16 @@ const TheaterBooking = () => {
 
     useEffect(() => {
         const initializeApp = async () => {
+            console.log('App initializing...');
             setIsLoading(true);
             try {
+                console.log('About to fetch seats...');
                 await fetchSeats();
+                console.log('Seats fetched successfully');
             } catch (error) {
-                console.error('Error initializing:', error);
+                console.error('Error in initialization:', error);
             } finally {
+                console.log('Setting isLoading to false');
                 setIsLoading(false);
             }
         };
@@ -78,19 +82,22 @@ const TheaterBooking = () => {
 
     const fetchSeats = async () => {
         try {
-            console.log('Fetching from:', `${API_URL}/api/seats`);
-            const response = await axios.get(`${API_URL}/api/seats`);
+            const apiUrl = `${API_URL}/api/seats`;
+            console.log('Fetching seats from:', apiUrl);
+            console.log('Current API_URL:', API_URL);
+            
+            const response = await axios.get(apiUrl);
+            console.log('Response received:', response);
+            
             setSeats(response.data);
             setLoading(false);
         } catch (err) {
-            console.error('Error fetching seats:', err);
-            setError(err.message);
+            console.error('Detailed error:', err);
+            console.error('Error response:', err.response);
+            setError(
+                `Error: ${err.message}. Status: ${err.response?.status}. Data: ${JSON.stringify(err.response?.data)}`
+            );
             setLoading(false);
-            
-            // Retry after 30 seconds
-            setTimeout(() => {
-                fetchSeats();
-            }, 30000);
         }
     };
 

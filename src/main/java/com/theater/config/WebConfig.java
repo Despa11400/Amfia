@@ -9,12 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(
-                    "https://amfia.vercel.app",
-                    "https://amfia-1ft3609ms-aleksas-projects-6dc9b594.vercel.app"
-                )
+                .allowedOrigins("*")  // Temporarily allow all origins for testing
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowedHeaders("*");
     }
 } 
