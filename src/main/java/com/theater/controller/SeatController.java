@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class SeatController {
     
     private static final Logger logger = LoggerFactory.getLogger(SeatController.class);
@@ -22,7 +21,7 @@ public class SeatController {
     @Autowired
     private SupabaseService supabaseService;
 
-    @GetMapping("/seats")
+    @GetMapping("/api/seats")
     public ResponseEntity<List<Seat>> getSeats() throws Exception {
         logger.info("Fetching all seats");
         try {
@@ -35,13 +34,13 @@ public class SeatController {
         }
     }
 
-    @PostMapping("/seats/reserve")
+    @PostMapping("/api/seats/reserve")
     public ResponseEntity<?> reserveSeats(@RequestBody Reservation reservation) throws Exception {
         supabaseService.reserveSeats(reservation);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/seats/cancel")
+    @PostMapping("/api/seats/cancel")
     public ResponseEntity<?> cancelReservation(@RequestBody CancelRequest request) throws Exception {
         System.out.println("Attempting to cancel reservation for seat: " + request.getSeatId());
         System.out.println("Student ID provided: " + request.getStudentId());
@@ -56,7 +55,7 @@ public class SeatController {
         return ResponseEntity.status(403).body("Unauthorized: Student ID does not match reservation");
     }
 
-    @PostMapping("/seats/clear-all")
+    @PostMapping("/api/seats/clear-all")
     public ResponseEntity<?> clearAll(@RequestHeader("Admin-Password") String password) throws Exception {
         System.out.println("Received password length: " + password.length());
         System.out.println("Expected password length: " + SupabaseConfig.ADMIN_PASSWORD.length());
@@ -74,7 +73,7 @@ public class SeatController {
         return ResponseEntity.status(403).body("Invalid admin password");
     }
 
-    @GetMapping("/test")
+    @GetMapping("/api/test")
     public String test() {
         logger.info("Test endpoint called");
         return "Backend is working!";

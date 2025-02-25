@@ -57,22 +57,23 @@ const TheaterBooking = () => {
     };
 
     useEffect(() => {
-        const initializeApp = async () => {
-            console.log('App initializing...');
-            setIsLoading(true);
+        const testBackend = async () => {
             try {
-                console.log('About to fetch seats...');
-                await fetchSeats();
-                console.log('Seats fetched successfully');
-            } catch (error) {
-                console.error('Error in initialization:', error);
-            } finally {
-                console.log('Setting isLoading to false');
-                setIsLoading(false);
+                console.log('Testing backend connection...');
+                const response = await axios.get('https://amfiabackend.onrender.com/api/ping');
+                console.log('Backend response:', response.data);
+                
+                if (response.data === 'pong') {
+                    console.log('Backend connection successful');
+                    fetchSeats();
+                }
+            } catch (err) {
+                console.error('Backend test failed:', err);
+                setError('Cannot connect to backend. Please try again later.');
             }
         };
 
-        initializeApp();
+        testBackend();
     }, []);
 
     useEffect(() => {
