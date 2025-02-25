@@ -79,14 +79,22 @@ const TheaterBooking = () => {
     const fetchSeats = async () => {
         try {
             console.log('Fetching seats from backend...');
+            setError(null);
             const response = await axios.get(`${API_URL}/api/seats`);
             console.log('Received seats:', response.data);
             setSeats(response.data);
             setLoading(false);
         } catch (err) {
             console.error('Error details:', err);
-            setError(err.message);
+            setError(
+                'Грешка при повезивању са сервером. Молимо сачекајте пар минута док се сервер покрене.'
+            );
             setLoading(false);
+            
+            // Retry after 30 seconds
+            setTimeout(() => {
+                fetchSeats();
+            }, 30000);
         }
     };
 
@@ -188,7 +196,13 @@ const TheaterBooking = () => {
     }
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (error) return (
+        <div className="error-message">
+            <h2>Грешка</h2>
+            <p>{error}</p>
+            <p>Сервер се покреће, молимо сачекајте...</p>
+        </div>
+    );
 
     return (
         <div className="theater-booking">

@@ -63,7 +63,7 @@ public class SeatController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Seat API is working!");
+    public String test() {
+        return "Backend is working!";
     }
 } 
