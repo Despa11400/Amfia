@@ -3,7 +3,7 @@ import axios from 'axios';
 import './TheaterBooking.css';
 import './Header.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_URL = process.env.REACT_APP_API_URL || 'https://amfiabackend.onrender.com';
 
 const TheaterBooking = () => {
     const [seats, setSeats] = useState([]);
@@ -78,17 +78,13 @@ const TheaterBooking = () => {
 
     const fetchSeats = async () => {
         try {
-            console.log('Fetching seats from backend...');
-            setError(null);
+            console.log('Fetching from:', `${API_URL}/api/seats`);
             const response = await axios.get(`${API_URL}/api/seats`);
-            console.log('Received seats:', response.data);
             setSeats(response.data);
             setLoading(false);
         } catch (err) {
-            console.error('Error details:', err);
-            setError(
-                'Грешка при повезивању са сервером. Молимо сачекајте пар минута док се сервер покрене.'
-            );
+            console.error('Error fetching seats:', err);
+            setError(err.message);
             setLoading(false);
             
             // Retry after 30 seconds
