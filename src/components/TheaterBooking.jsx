@@ -14,6 +14,7 @@ const TheaterBooking = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showAdminControls, setShowAdminControls] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const faculties = [
         "Архитектонски факултет",
@@ -56,7 +57,18 @@ const TheaterBooking = () => {
     };
 
     useEffect(() => {
-        fetchSeats();
+        const initializeApp = async () => {
+            setIsLoading(true);
+            try {
+                await fetchSeats();
+            } catch (error) {
+                console.error('Error initializing:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        initializeApp();
     }, []);
 
     useEffect(() => {
@@ -170,6 +182,10 @@ const TheaterBooking = () => {
             console.log('Admin controls toggled:', !showAdminControls);
         }
     };
+
+    if (isLoading) {
+        return <div className="loading">Учитавање апликације...</div>;
+    }
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
