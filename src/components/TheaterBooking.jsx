@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TheaterBooking.css';
 import './Header.css';
+import { supabase } from '../config/supabaseClient'
 
 const API_URL = 'https://amfiabackend.onrender.com';
 
@@ -85,26 +86,23 @@ const TheaterBooking = () => {
         return () => window.removeEventListener('keydown', toggleAdminControls);
     }, []);
 
+    useEffect(() => {
+        fetchSeats()
+    }, [])
+
     const fetchSeats = async () => {
         try {
-            const apiUrl = `${API_URL}/api/seats`;
-            console.log('Fetching seats from:', apiUrl);
-            console.log('Current API_URL:', API_URL);
+            const { data, error } = await supabase
+                .from('seats')
+                .select('*')
             
-            const response = await axios.get(apiUrl);
-            console.log('Response received:', response);
-            
-            setSeats(response.data);
-            setLoading(false);
-        } catch (err) {
-            console.error('Detailed error:', err);
-            console.error('Error response:', err.response);
-            setError(
-                `Error: ${err.message}. Status: ${err.response?.status}. Data: ${JSON.stringify(err.response?.data)}`
-            );
-            setLoading(false);
+            if (error) throw error
+            setSeats(data)
+        } catch (error) {
+            console.error('Error fetching seats:', error)
+            setError(error.message)
         }
-    };
+    }
 
     const handleSeatClick = (seat) => {
         if (seat.booked) return;
@@ -144,27 +142,25 @@ const TheaterBooking = () => {
     };
 
     const handleReservation = async (e) => {
-        e.preventDefault();
-        
-        const reservation = {
-            customerName: customerName,
-            studentId: studentId,
-            faculty: faculty,
-            seats: selectedSeats
-        };
-
+        e.preventDefault()
         try {
-            const response = await axios.post(`${API_URL}/api/seats/reserve`, reservation);
-            alert('Резервација је успешно извршена!');
-            fetchSeats();
-            setSelectedSeats([]);
-            setCustomerName('');
-            setStudentId('');
-            setFaculty('');
-        } catch (err) {
-            alert('Грешка при резервацији: ' + err.message);
+            const { error } = await supabase
+                .from('seats')
+                .update({ 
+                    is_reserved: true,
+                    customer_name: customerName,
+                    student_id: studentId,
+                    faculty: faculty 
+                })
+                .in('id', selectedSeats.map(s => s.id))
+            
+            if (error) throw error
+            fetchSeats() // Refresh seats
+        } catch (error) {
+            console.error('Error making reservation:', error)
+            setError(error.message)
         }
-    };
+    }
 
     const handleClearAll = async () => {
         const adminPassword = prompt("Унесите администраторску лозинку:");

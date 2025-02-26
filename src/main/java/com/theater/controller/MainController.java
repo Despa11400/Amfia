@@ -7,11 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "*")
+@RequestMapping("/")
 public class MainController {
     
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<String> home() {
         logger.info("Home endpoint called");
         return ResponseEntity.ok("Backend is running");
