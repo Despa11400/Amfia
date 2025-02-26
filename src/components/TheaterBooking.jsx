@@ -58,18 +58,34 @@ const TheaterBooking = () => {
 
     useEffect(() => {
         const testBackend = async () => {
+            setIsLoading(true);
             try {
                 console.log('Testing backend connection...');
-                const response = await axios.get('https://amfiabackend.onrender.com/api/ping');
-                console.log('Backend response:', response.data);
+                console.log('Trying /health...');
+                await axios.get('https://amfiabackend.onrender.com/health');
                 
-                if (response.data === 'pong') {
-                    console.log('Backend connection successful');
-                    fetchSeats();
-                }
+                console.log('Trying /api/ping...');
+                const pingResponse = await axios.get('https://amfiabackend.onrender.com/api/ping');
+                console.log('Ping response:', pingResponse.data);
+                
+                console.log('Trying /api/seats...');
+                const seatsResponse = await axios.get('https://amfiabackend.onrender.com/api/seats');
+                console.log('Seats response:', seatsResponse.data);
+                
+                setSeats(seatsResponse.data);
+                setLoading(false);
+                setIsLoading(false);
             } catch (err) {
                 console.error('Backend test failed:', err);
-                setError('Cannot connect to backend. Please try again later.');
+                console.error('Full error object:', {
+                    message: err.message,
+                    response: err.response,
+                    request: err.request,
+                    config: err.config
+                });
+                setError(`Cannot connect to backend: ${err.message}`);
+                setLoading(false);
+                setIsLoading(false);
             }
         };
 
@@ -201,10 +217,21 @@ const TheaterBooking = () => {
 
     if (loading) return <div>Loading...</div>;
     if (error) return (
-        <div className="error-message">
-            <h2>Грешка</h2>
+        <div className="error-message" style={{
+            padding: '20px',
+            margin: '20px',
+            backgroundColor: 'white',
+            border: '1px solid red',
+            borderRadius: '5px'
+        }}>
+            <h2>Error</h2>
             <p>{error}</p>
-            <p>Сервер се покреће, молимо сачекајте...</p>
+            <button onClick={() => window.location.reload()}>
+                Try Again
+            </button>
+            <pre style={{whiteSpace: 'pre-wrap'}}>
+                {JSON.stringify(error, null, 2)}
+            </pre>
         </div>
     );
 
