@@ -252,6 +252,11 @@ const TheaterBooking = () => {
                 {['I', 'II', 'III', 'IV'].map(section => (
                     <div key={section} className="section">
                         <h3>Сектор {section}</h3>
+                        <div className="column-numbers">
+                            {[...Array(16)].map((_, i) => (
+                                <div key={i} className="column-number">{i + 1}</div>
+                            ))}
+                        </div>
                         <div className="rows">
                             {[...Array(10)].map((_, rowIndex) => {
                                 const rowLetter = String.fromCharCode(65 + rowIndex);
@@ -261,6 +266,7 @@ const TheaterBooking = () => {
                                         <div className="seats">
                                             {seats
                                                 .filter(seat => seat.section === sectionMapping[section] && seat.row === rowLetter)
+                                                .sort((a, b) => a.seat_column - b.seat_column)
                                                 .map(seat => (
                                                     <div
                                                         key={seat.id}
