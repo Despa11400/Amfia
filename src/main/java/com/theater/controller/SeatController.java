@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*")
 public class SeatController {
     
     private static final Logger logger = LoggerFactory.getLogger(SeatController.class);
@@ -22,15 +22,14 @@ public class SeatController {
     private SupabaseService supabaseService;
 
     @GetMapping("/api/seats")
-    public ResponseEntity<List<Seat>> getSeats() throws Exception {
-        logger.info("Fetching all seats");
+    public ResponseEntity<List<Seat>> getSeats() {
         try {
+            logger.info("Fetching seats...");
             List<Seat> seats = supabaseService.getAllSeats();
-            logger.info("Successfully fetched {} seats", seats.size());
             return ResponseEntity.ok(seats);
         } catch (Exception e) {
-            logger.error("Error fetching seats", e);
-            throw e;
+            logger.error("Error fetching seats: ", e);
+            return ResponseEntity.status(500).body(null);
         }
     }
 
@@ -74,8 +73,7 @@ public class SeatController {
     }
 
     @GetMapping("/api/test")
-    public String test() {
-        logger.info("Test endpoint called");
-        return "Backend is working!";
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Seats API working");
     }
 } 
