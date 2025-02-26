@@ -57,39 +57,27 @@ const TheaterBooking = () => {
     };
 
     useEffect(() => {
-        const testBackend = async () => {
-            setIsLoading(true);
+        const testConnection = async () => {
+            console.log('Testing connection...');
             try {
-                console.log('Testing backend connection...');
-                console.log('Trying /health...');
-                await axios.get('https://amfiabackend.onrender.com/health');
+                const response = await fetch('https://amfiabackend.onrender.com/test-connection');
+                const text = await response.text();
+                console.log('Connection test response:', text);
                 
-                console.log('Trying /api/ping...');
-                const pingResponse = await axios.get('https://amfiabackend.onrender.com/api/ping');
-                console.log('Ping response:', pingResponse.data);
-                
-                console.log('Trying /api/seats...');
-                const seatsResponse = await axios.get('https://amfiabackend.onrender.com/api/seats');
-                console.log('Seats response:', seatsResponse.data);
-                
-                setSeats(seatsResponse.data);
-                setLoading(false);
-                setIsLoading(false);
+                if (text === 'Connection successful!') {
+                    console.log('Connection test passed, fetching seats...');
+                    await fetchSeats();
+                } else {
+                    throw new Error('Unexpected response from server');
+                }
             } catch (err) {
-                console.error('Backend test failed:', err);
-                console.error('Full error object:', {
-                    message: err.message,
-                    response: err.response,
-                    request: err.request,
-                    config: err.config
-                });
-                setError(`Cannot connect to backend: ${err.message}`);
+                console.error('Connection test failed:', err);
+                setError('Cannot connect to server. Please try again later.');
                 setLoading(false);
-                setIsLoading(false);
             }
         };
 
-        testBackend();
+        testConnection();
     }, []);
 
     useEffect(() => {
@@ -211,27 +199,53 @@ const TheaterBooking = () => {
         }
     };
 
-    if (isLoading) {
-        return <div className="loading">Учитавање апликације...</div>;
+    if (loading || isLoading) {
+        return (
+            <div style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '8px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                zIndex: 1000
+            }}>
+                <h2>Loading...</h2>
+                <p>Connecting to server, please wait...</p>
+            </div>
+        );
     }
 
-    if (loading) return <div>Loading...</div>;
     if (error) return (
-        <div className="error-message" style={{
-            padding: '20px',
-            margin: '20px',
+        <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             backgroundColor: 'white',
-            border: '1px solid red',
-            borderRadius: '5px'
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            zIndex: 1000,
+            maxWidth: '80%'
         }}>
-            <h2>Error</h2>
+            <h2 style={{color: 'red'}}>Error</h2>
             <p>{error}</p>
-            <button onClick={() => window.location.reload()}>
-                Try Again
+            <button 
+                onClick={() => window.location.reload()}
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                }}
+            >
+                Retry
             </button>
-            <pre style={{whiteSpace: 'pre-wrap'}}>
-                {JSON.stringify(error, null, 2)}
-            </pre>
         </div>
     );
 
