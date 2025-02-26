@@ -236,9 +236,17 @@ const TheaterBooking = () => {
     return (
         <div className="theater-booking">
             <img 
-                src="/background.png" 
+                src="background.png" 
                 alt="Background" 
-                className="background-image"
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    zIndex: -1
+                }}
             />
             {showAdminControls && (
                 <div className="admin-controls">
