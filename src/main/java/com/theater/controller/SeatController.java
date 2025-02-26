@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
+@RequestMapping("/api")
 public class SeatController {
     
     private static final Logger logger = LoggerFactory.getLogger(SeatController.class);
@@ -21,7 +22,7 @@ public class SeatController {
     @Autowired
     private SupabaseService supabaseService;
 
-    @GetMapping("/api/seats")
+    @GetMapping("/seats")
     public ResponseEntity<List<Seat>> getSeats() {
         try {
             logger.info("Fetching seats...");
@@ -33,13 +34,13 @@ public class SeatController {
         }
     }
 
-    @PostMapping("/api/seats/reserve")
+    @PostMapping("/seats/reserve")
     public ResponseEntity<?> reserveSeats(@RequestBody Reservation reservation) throws Exception {
         supabaseService.reserveSeats(reservation);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/seats/cancel")
+    @PostMapping("/seats/cancel")
     public ResponseEntity<?> cancelReservation(@RequestBody CancelRequest request) throws Exception {
         System.out.println("Attempting to cancel reservation for seat: " + request.getSeatId());
         System.out.println("Student ID provided: " + request.getStudentId());
@@ -54,7 +55,7 @@ public class SeatController {
         return ResponseEntity.status(403).body("Unauthorized: Student ID does not match reservation");
     }
 
-    @PostMapping("/api/seats/clear-all")
+    @PostMapping("/seats/clear-all")
     public ResponseEntity<?> clearAll(@RequestHeader("Admin-Password") String password) throws Exception {
         System.out.println("Received password length: " + password.length());
         System.out.println("Expected password length: " + SupabaseConfig.ADMIN_PASSWORD.length());
@@ -72,8 +73,9 @@ public class SeatController {
         return ResponseEntity.status(403).body("Invalid admin password");
     }
 
-    @GetMapping("/api/test")
+    @GetMapping("/test")
     public ResponseEntity<String> test() {
+        logger.info("Test endpoint called");
         return ResponseEntity.ok("Seats API working");
     }
 } 
