@@ -83,7 +83,7 @@ const TheaterBooking = () => {
     }
 
     const handleSeatClick = (seat) => {
-        if (seat.booked) return;
+        if (seat.is_reserved) return;
         
         if (selectedSeats.length > 0) {
             setSelectedSeats([seat]);
@@ -120,6 +120,13 @@ const TheaterBooking = () => {
     const handleReservation = async (e) => {
         e.preventDefault()
         try {
+            console.log('Attempting reservation with:', {
+                seats: selectedSeats,
+                customerName,
+                studentId,
+                faculty
+            });
+
             const { error } = await supabase
                 .from('seats')
                 .update({ 
@@ -128,13 +135,19 @@ const TheaterBooking = () => {
                     student_id: studentId,
                     faculty: faculty 
                 })
-                .in('id', selectedSeats.map(s => s.id))
+                .in('id', selectedSeats.map(s => s.id));
             
-            if (error) throw error
-            fetchSeats() // Refresh seats
+            if (error) throw error;
+            
+            alert('Резервација је успешно извршена!');
+            setSelectedSeats([]);
+            setCustomerName('');
+            setStudentId('');
+            setFaculty('');
+            fetchSeats();
         } catch (error) {
-            console.error('Error making reservation:', error)
-            setError(error.message)
+            console.error('Error making reservation:', error);
+            alert('Грешка при резервацији: ' + error.message);
         }
     }
 
@@ -256,12 +269,12 @@ const TheaterBooking = () => {
                                                 .map(seat => (
                                                     <div
                                                         key={seat.id}
-                                                        className={`seat ${seat.booked ? 'booked' : ''} 
+                                                        className={`seat ${seat.is_reserved ? 'booked' : ''} 
                                                             ${selectedSeats.find(s => s.id === seat.id) ? 'selected' : ''}`}
-                                                        onClick={() => seat.booked ? handleCancelReservation(seat) : handleSeatClick(seat)}
-                                                        title={seat.booked ? `Reserved by: ${seat.studentName}\nClick to cancel` : 'Click to select'}
+                                                        onClick={() => seat.is_reserved ? handleCancelReservation(seat) : handleSeatClick(seat)}
+                                                        title={seat.is_reserved ? `Reserved by: ${seat.customer_name}\nClick to cancel` : 'Click to select'}
                                                     >
-                                                        {seat.column}
+                                                        {seat.seat_column}
                                                     </div>
                                                 ))}
                                         </div>
@@ -292,7 +305,7 @@ const TheaterBooking = () => {
                 <div className="reservation-form">
                     <h3>Завршите вашу резервацију</h3>
                     <p>Изабрана места: {selectedSeats.map(s => 
-                        `${s.section}${s.row}${s.column}`).join(', ')}</p>
+                        `${s.section}${s.row}${s.seat_column}`).join(', ')}</p>
                     
                     <form onSubmit={handleReservation}>
                         <div className="form-group">
