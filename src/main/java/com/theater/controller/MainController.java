@@ -1,11 +1,13 @@
 package com.theater.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
 @CrossOrigin(origins = "*")
+@RequestMapping("/")
 public class MainController {
     
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -16,10 +18,10 @@ public class MainController {
         return "Backend is running";
     }
 
-    @GetMapping(value = "/health")
-    public String health() {
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
         logger.info("Health check called");
-        return "OK";
+        return ResponseEntity.ok("OK");
     }
 
     @GetMapping(value = "/api/ping")
@@ -30,8 +32,13 @@ public class MainController {
 
     // Add this test endpoint
     @GetMapping("/test-connection")
-    public String testConnection() {
+    public ResponseEntity<String> testConnection() {
         logger.info("Test connection endpoint called");
-        return "Connection successful!";
+        try {
+            return ResponseEntity.ok("Connection successful!");
+        } catch (Exception e) {
+            logger.error("Error in test connection", e);
+            return ResponseEntity.status(500).body("Server error: " + e.getMessage());
+        }
     }
 } 
