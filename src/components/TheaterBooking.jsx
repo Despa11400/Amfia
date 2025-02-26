@@ -4,8 +4,6 @@ import './TheaterBooking.css';
 import './Header.css';
 import { supabase } from '../config/supabaseClient'
 
-const API_URL = 'https://amfiabackend.onrender.com';
-
 const TheaterBooking = () => {
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
@@ -58,37 +56,13 @@ const TheaterBooking = () => {
     };
 
     useEffect(() => {
-        const testConnection = async () => {
-            console.log('Testing connection...');
-            try {
-                const response = await fetch('https://amfiabackend.onrender.com/test-connection');
-                const text = await response.text();
-                console.log('Connection test response:', text);
-                
-                if (text === 'Connection successful!') {
-                    console.log('Connection test passed, fetching seats...');
-                    await fetchSeats();
-                } else {
-                    throw new Error('Unexpected response from server');
-                }
-            } catch (err) {
-                console.error('Connection test failed:', err);
-                setError('Cannot connect to server. Please try again later.');
-                setLoading(false);
-            }
-        };
-
-        testConnection();
+        fetchSeats();  // Just fetch seats directly from Supabase
     }, []);
 
     useEffect(() => {
         window.addEventListener('keydown', toggleAdminControls);
         return () => window.removeEventListener('keydown', toggleAdminControls);
     }, []);
-
-    useEffect(() => {
-        fetchSeats()
-    }, [])
 
     const fetchSeats = async () => {
         try {
@@ -119,25 +93,23 @@ const TheaterBooking = () => {
         if (!studentId) return;
 
         try {
-            console.log('Attempting to cancel reservation:', {
-                seatId: seat.id,
-                studentId: studentId,
-                currentSeatInfo: seat
-            });
+            const { error } = await supabase
+                .from('seats')
+                .update({ 
+                    is_reserved: false,
+                    customer_name: null,
+                    student_id: null,
+                    faculty: null 
+                })
+                .eq('id', seat.id)
+                .eq('student_id', studentId);
 
-            const response = await axios.post(`${API_URL}/api/seats/cancel`, {
-                seatId: seat.id,
-                studentId: studentId
-            });
-
-            if (response.status === 200) {
-                alert('Резервација је успешно отказана!');
-                fetchSeats();  // Refresh the seats display
-            }
-        } catch (err) {
-            console.error('Cancel reservation error:', err.response?.data || err.message);
-            alert('Грешка при отказивању резервације: ' + 
-                  (err.response?.data || 'Број индекса се не подудара са резервацијом'));
+            if (error) throw error;
+            alert('Резервација је успешно отказана!');
+            fetchSeats();
+        } catch (error) {
+            console.error('Error canceling reservation:', error);
+            alert('Грешка при отказивању резервације: Број индекса се не подудара са резервацијом');
         }
     };
 
@@ -166,24 +138,23 @@ const TheaterBooking = () => {
         const adminPassword = prompt("Унесите администраторску лозинку:");
         if (!adminPassword) return;
 
-        console.log('Password being sent:', adminPassword);
-        console.log('Password length:', adminPassword.length);
-
         if (window.confirm('Да ли сте сигурни да желите да обришете све резервације? Ова акција се не може поништити.')) {
             try {
-                const response = await axios.post(`${API_URL}/api/seats/clear-all`, null, {
-                    headers: {
-                        'Admin-Password': adminPassword.trim()
-                    }
-                });
+                const { error } = await supabase
+                    .from('seats')
+                    .update({ 
+                        is_reserved: false,
+                        customer_name: null,
+                        student_id: null,
+                        faculty: null 
+                    });
+
+                if (error) throw error;
                 alert('Све резервације су успешно обрисане!');
                 fetchSeats();
-            } catch (err) {
-                console.error('Clear all error:', err);
-                console.error('Response data:', err.response?.data);
-                console.error('Password that failed:', adminPassword);
-                alert('Грешка при брисању резервација: ' + 
-                      (err.response?.data || 'Неисправна администраторска лозинка'));
+            } catch (error) {
+                console.error('Error clearing reservations:', error);
+                alert('Грешка при брисању резервација: Неисправна администраторска лозинка');
             }
         }
     };
