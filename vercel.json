@@ -1,12 +1,20 @@
 {
   "version": 2,
-  "buildCommand": "bash ./build.sh",
-  "outputDirectory": "build",
-  "framework": "create-react-app",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    }
+  ],
   "routes": [
     {
       "src": "/static/(.*)",
       "dest": "/static/$1"
+    },
+    {
+      "src": "/background.png",
+      "dest": "/background.png"
     },
     {
       "src": "/favicon.ico",

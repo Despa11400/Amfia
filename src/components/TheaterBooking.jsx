@@ -235,6 +235,11 @@ const TheaterBooking = () => {
 
     return (
         <div className="theater-booking">
+            <img 
+                src="/background.png"
+                alt=""
+                className="background-image"
+            />
             {showAdminControls && (
                 <div className="admin-controls">
                     <button 
