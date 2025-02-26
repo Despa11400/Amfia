@@ -13,7 +13,6 @@ const TheaterBooking = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showAdminControls, setShowAdminControls] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
     const faculties = [
         "Архитектонски факултет",
@@ -56,7 +55,8 @@ const TheaterBooking = () => {
     };
 
     useEffect(() => {
-        fetchSeats();  // Just fetch seats directly from Supabase
+        console.log('Fetching seats...');
+        fetchSeats();
     }, []);
 
     useEffect(() => {
@@ -66,15 +66,19 @@ const TheaterBooking = () => {
 
     const fetchSeats = async () => {
         try {
+            console.log('Starting Supabase query...');
             const { data, error } = await supabase
                 .from('seats')
                 .select('*')
             
+            console.log('Received data:', data);
             if (error) throw error
             setSeats(data)
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching seats:', error)
             setError(error.message)
+            setLoading(false);
         }
     }
 
@@ -166,7 +170,7 @@ const TheaterBooking = () => {
         }
     };
 
-    if (loading || isLoading) {
+    if (loading) {
         return (
             <div style={{
                 position: 'fixed',
@@ -180,7 +184,7 @@ const TheaterBooking = () => {
                 zIndex: 1000
             }}>
                 <h2>Loading...</h2>
-                <p>Connecting to server, please wait...</p>
+                <p>Учитавање података...</p>
             </div>
         );
     }
