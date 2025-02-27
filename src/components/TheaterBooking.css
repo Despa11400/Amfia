@@ -208,7 +208,7 @@
 
 /* Column numbers */
 .column-numbers {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(16, 1fr);
     gap: 1px;
     margin-left: 24px;
@@ -370,6 +370,11 @@ h1 {
     text-align: center;
     color: #333;
     margin-bottom: 30px;
+    text-shadow: 
+    1px 1px 0px white, /* White outline shadow */
+    -1px -1px 0px white, 
+    1px -1px 0px white, 
+    -1px 1px 0px white;
 } 
 @media (max-width: 768px) {
     .seating-plan {
