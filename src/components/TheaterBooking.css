@@ -371,3 +371,41 @@ h1 {
     color: #333;
     margin-bottom: 30px;
 } 
+@media (max-width: 768px) {
+    .seating-plan {
+        grid-template-columns: 1fr; /* Stack sections vertically */
+        gap: 15px;
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    .sections-container {
+        grid-template-columns: 1fr; /* Stack seat sections */
+    }
+
+    .seats {
+        grid-template-columns: repeat(8, 1fr); /* Reduce columns for smaller screens */
+    }
+
+    .seat {
+        min-width: 20px;
+        min-height: 20px;
+        font-size: 12px;
+    }
+
+    .screen {
+        width: 80%;
+        font-size: 10px;
+    }
+
+    .reservation-form {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .legend {
+        max-width: 100%;
+        flex-wrap: wrap;
+        font-size: 10px;
+    }
+}
