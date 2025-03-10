@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "react-scripts start",
     "start": "react-scripts start",
-    "build": "set CI=false && set GENERATE_SOURCEMAP=false && react-scripts build",
+    "build": "npx react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
