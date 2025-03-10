@@ -3,6 +3,7 @@ import axios from 'axios';
 import './TheaterBooking.css';
 import './Header.css';
 import { supabase } from '../config/supabaseClient'
+import background from './background.png';
 
 const TheaterBooking = () => {
     const [seats, setSeats] = useState([]);
@@ -283,6 +284,15 @@ const TheaterBooking = () => {
 
     return (
         <div className="theater-booking">
+            <div className="header-container">
+                <img src={background} alt="Машински факултет" className="logo" />
+                <div className="header-text">
+                    Машински факултет<br />
+                    Машинерије<br />
+                    Против
+                </div>
+            </div>
+
             {showAdminControls && (
                 <div className="admin-controls">
                     <button 
