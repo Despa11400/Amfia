@@ -1,0 +1,12 @@
+{
+  "install": "mvn clean install -DskipTests",
+  "start": "java -jar target/*.jar",
+  "watch": {
+    "install": {
+      "include": [
+        "^pom\\.xml",
+        "^src/"
+      ]
+    }
+  }
+} 

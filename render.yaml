@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: amfia-backend
+    env: docker
+    buildCommand: ./mvnw package
+    startCommand: java -jar target/theater-booking-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: PORT
+        value: 8080 
