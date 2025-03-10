@@ -181,9 +181,6 @@
     font-size: 0.8rem;
     padding: 0;
     touch-action: manipulation;
-    border: 1px solid #ccc;
-    text-align: center;
-    cursor: pointer;
 }
 
 .seat:hover {
@@ -612,31 +609,31 @@ h1 {
 
 @media (max-width: 480px) {
     .seating-plan {
-        transform: scale(0.92);
+        transform: scale(0.9);
         transform-origin: top center;
     }
 
     .section {
-        padding: 6px;
-        transform: scale(0.92);
+        padding: 5px;
+        transform: scale(0.9);
     }
 
     .seats {
-        grid-template-columns: repeat(16, minmax(21px, 1fr));
-        gap: 1px;
+        grid-template-columns: repeat(16, minmax(18px, 1fr));
+        gap: 0.5px;
     }
 
     .seat {
-        min-width: 21px;
-        min-height: 21px;
-        font-size: 0.65rem;
+        min-width: 18px;
+        min-height: 18px;
+        font-size: 0.6rem;
         border-width: 1px;
     }
 
     .row-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         width: 10px;
-        margin-right: 2px;
+        margin-right: 1px;
     }
 
     .section h3 {
@@ -662,21 +659,21 @@ h1 {
 
 @media (max-width: 360px) {
     .seating-plan {
-        transform: scale(0.88);
+        transform: scale(0.85);
     }
 
     .section {
-        transform: scale(0.88);
+        transform: scale(0.85);
     }
 
     .seats {
-        grid-template-columns: repeat(16, minmax(19px, 1fr));
+        grid-template-columns: repeat(16, minmax(16px, 1fr));
     }
 
     .seat {
-        min-width: 19px;
-        min-height: 19px;
-        font-size: 0.6rem;
+        min-width: 16px;
+        min-height: 16px;
+        font-size: 0.55rem;
     }
 }
 
