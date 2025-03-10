@@ -559,40 +559,61 @@ h1 {
         gap: 15px;
         padding: 0 5px;
         margin: 10px auto;
+        transform-origin: top center;
     }
 
     .section {
-        padding: 10px;
+        padding: 8px;
         margin: 0 auto;
-        width: 100%;
-        max-width: 100%;
+        width: 90%;
+        max-width: 90%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        transition: all 0.3s ease;
+        transform-origin: top center;
+        cursor: pointer;
     }
 
-    .section h3 {
-        font-size: 1rem;
-        padding: 8px;
-        margin-bottom: 10px;
-        position: sticky;
-        left: 0;
-        z-index: 1;
+    .section.expanded {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+        transform: scale(1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        z-index: 2;
+    }
+
+    .section:not(.expanded) {
+        transform: scale(0.9);
+        opacity: 0.8;
+    }
+
+    .section:not(.expanded):hover {
+        transform: scale(0.92);
+    }
+
+    .section:not(.expanded) .seats {
+        opacity: 0.7;
     }
 
     .seats {
         grid-template-columns: repeat(16, 1fr);
-        gap: 3px;
+        gap: 2px;
         min-width: max-content;
         padding: 0 5px;
+        transition: opacity 0.3s ease;
     }
 
     .seat {
-        min-width: 35px;
-        min-height: 35px;
+        min-width: 30px;
+        min-height: 30px;
+        font-size: 0.85rem;
+    }
+
+    .section h3 {
         font-size: 0.9rem;
-        border-width: 1.5px;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
+        padding: 6px;
+        margin-bottom: 8px;
     }
 
     .row {
@@ -699,6 +720,25 @@ h1 {
         pointer-events: none;
         opacity: 0.5;
         border-radius: 20px 0 0 20px;
+    }
+}
+
+/* Add animation keyframes */
+@keyframes sectionExpand {
+    0% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes sectionCollapse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0.9);
     }
 }
 

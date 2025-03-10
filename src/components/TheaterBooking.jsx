@@ -15,6 +15,7 @@ const TheaterBooking = () => {
     const [error, setError] = useState(null);
     const [showAdminControls, setShowAdminControls] = useState(false);
     const [isMarkingBroken, setIsMarkingBroken] = useState(false);
+    const [expandedSection, setExpandedSection] = useState(null);
 
     const faculties = [
         "Архитектонски факултет",
@@ -232,6 +233,12 @@ const TheaterBooking = () => {
         }
     };
 
+    const handleSectionClick = (section) => {
+        if (window.innerWidth <= 768) {
+            setExpandedSection(expandedSection === section ? null : section);
+        }
+    };
+
     if (loading) {
         return (
             <div style={{
@@ -289,10 +296,11 @@ const TheaterBooking = () => {
                     <img src={backgroundImage} alt="Машински факултет" className="logo" />
                 </div>
                 <div className="header-text">
-                    Добро дошли на званични сајт за резервацију за трибине које се одржавају у Амфитеатру А
+                    Добро дошли на званични сајт за резервацију за трибине које се одржавају у Амфитеатру А.
                     <br />
                     Молимо вас да резервишете места за трибине у складу са наведеним правилима.
                     <br />
+                    Ако сте на телефону сектори се превлаче за лакшу прегледност.
                     Професори који Резервишу се моле да на место броја индекса ставе датум рођења.
                     <br />
                     Хвала вам.
@@ -320,7 +328,11 @@ const TheaterBooking = () => {
             
             <div className="seating-plan">
                 {['I', 'II', 'III', 'IV'].map(section => (
-                    <div key={section} className="section">
+                    <div 
+                        key={section} 
+                        className={`section ${expandedSection === section ? 'expanded' : ''}`}
+                        onClick={() => handleSectionClick(section)}
+                    >
                         <h3>Сектор {section}</h3>
                         <div className="column-numbers">
                             {[...Array(16)].map((_, i) => (
