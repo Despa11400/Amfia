@@ -251,6 +251,7 @@
 
 .form-group {
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .form-group label {
@@ -270,6 +271,19 @@
     background-color: white;
     font-size: 1rem;
     transition: all 0.3s ease;
+    box-sizing: border-box;
+    height: 48px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-group select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
 }
 
 .form-group input:focus,
@@ -681,10 +695,7 @@ h1 {
     .form-group input,
     .form-group select {
         font-size: 16px;
-        padding: 12px;
-        border-radius: 10px;
-        -webkit-appearance: none;
-        appearance: none;
+        height: 46px;
     }
 
     .submit-button {
