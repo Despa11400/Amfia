@@ -97,12 +97,24 @@ const TheaterBooking = () => {
         if (!isMarkingBroken) return;
         
         try {
-            const { error } = await supabase
+            console.log('Attempting to mark seat as broken:', seat);
+            const { data, error } = await supabase
                 .from('seats')
                 .update({ is_broken: !seat.is_broken })
-                .eq('id', seat.id);
+                .eq('id', seat.id)
+                .select();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error:', error);
+                if (error.message.includes('column "is_broken" does not exist')) {
+                    alert('Грешка: Колона "is_broken" не постоји у бази. Молимо контактирајте администратора.');
+                } else {
+                    alert('Грешка при означавању места као покварено: ' + error.message);
+                }
+                return;
+            }
+
+            console.log('Successfully updated seat:', data);
             fetchSeats();
         } catch (error) {
             console.error('Error marking seat as broken:', error);
@@ -173,6 +185,12 @@ const TheaterBooking = () => {
         const adminPassword = prompt("Унесите администраторску лозинку:");
         if (!adminPassword) return;
 
+        // Check for correct admin password
+        if (adminPassword !== "admin123") {
+            alert("Погрешна администраторска лозинка!");
+            return;
+        }
+
         if (window.confirm('Да ли сте сигурни да желите да обришете све резервације? Ова акција се не може поништити.')) {
             try {
                 const { error } = await supabase
@@ -189,7 +207,7 @@ const TheaterBooking = () => {
                 fetchSeats();
             } catch (error) {
                 console.error('Error clearing reservations:', error);
-                alert('Грешка при брисању резервација: Неисправна администраторска лозинка');
+                alert('Грешка при брисању резервација');
             }
         }
     };
