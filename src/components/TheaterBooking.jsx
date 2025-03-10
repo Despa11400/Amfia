@@ -3,7 +3,7 @@ import axios from 'axios';
 import './TheaterBooking.css';
 import './Header.css';
 import { supabase } from '../config/supabaseClient'
-import background from './background.png';
+import backgroundImage from './background.png';
 
 const TheaterBooking = () => {
     const [seats, setSeats] = useState([]);
@@ -285,12 +285,12 @@ const TheaterBooking = () => {
     return (
         <div className="theater-booking">
             <div className="header-container">
-                <img src={background} alt="Машински факултет" className="logo" />
+                <div className="logo-container">
+                    <img src={backgroundImage} alt="Машински факултет" className="logo" />
+                </div>
                 <div className="header-text">
-                    Добро дошли на званични сајт за резервацију за трибине које се одржавају у Амфитеатру А.<br />
-                    Молимо вас да резервишете места за трибине у складу са наведеним пољима(Не попуњавање поља може довести до не пуштања на факултет).<br />
-                    Професори који Резервишу се моле да на место броја индекса ставе датум рођења.
-                    Хвала вам.
+                    Машински факултет<br />
+                    Машинерије
                 </div>
             </div>
 
