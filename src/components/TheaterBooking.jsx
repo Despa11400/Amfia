@@ -193,21 +193,20 @@ const TheaterBooking = () => {
 
         if (window.confirm('Да ли сте сигурни да желите да обришете све резервације? Ова акција се не може поништити.')) {
             try {
-                // First, get all seats to preserve their is_broken status
+                // First, get all seats to preserve their data
                 const { data: currentSeats, error: fetchError } = await supabase
                     .from('seats')
                     .select('*');
 
                 if (fetchError) throw fetchError;
 
-                // Update each seat, preserving its is_broken status
+                // Update each seat, preserving everything except reservation data
                 const updates = currentSeats.map(seat => ({
-                    id: seat.id,
+                    ...seat, // Keep all existing data
                     is_reserved: false,
                     customer_name: null,
                     student_id: null,
-                    faculty: null,
-                    is_broken: seat.is_broken // Preserve the broken status
+                    faculty: null
                 }));
 
                 const { error: updateError } = await supabase
