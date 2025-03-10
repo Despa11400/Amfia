@@ -540,38 +540,41 @@ h1 {
     }
 
     .seating-plan {
-        transform: scale(1);
-        transform-origin: top center;
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 0 5px;
+        margin: 10px auto;
+        max-width: 100%;
     }
 
     .section {
-        padding: 12px;
+        padding: 8px;
         margin: 0;
         border-radius: 8px;
-        transform: scale(1);
+        transform: scale(0.95);
     }
 
     .section:hover {
-        transform: scale(1);
+        transform: scale(0.95);
     }
 
     .seats {
-        grid-template-columns: repeat(16, minmax(32px, 1fr));
-        gap: 2px;
+        grid-template-columns: repeat(16, minmax(20px, 1fr));
+        gap: 1px;
     }
 
     .seat {
-        min-width: 32px;
-        min-height: 32px;
-        font-size: 0.85rem;
-        border-width: 1.5px;
+        min-width: 20px;
+        min-height: 20px;
+        font-size: 0.65rem;
+        border-width: 1px;
         border-radius: 4px;
     }
 
     .row-label {
-        font-size: 0.8rem;
-        width: 15px;
-        margin-right: 4px;
+        font-size: 0.7rem;
+        width: 12px;
+        margin-right: 2px;
     }
 
     .legend {
@@ -606,31 +609,31 @@ h1 {
 
 @media (max-width: 480px) {
     .seating-plan {
-        transform: scale(0.98);
+        transform: scale(0.9);
         transform-origin: top center;
     }
 
     .section {
-        padding: 10px;
-        transform: scale(0.98);
+        padding: 5px;
+        transform: scale(0.9);
     }
 
     .seats {
-        grid-template-columns: repeat(16, minmax(28px, 1fr));
-        gap: 1.5px;
+        grid-template-columns: repeat(16, minmax(18px, 1fr));
+        gap: 0.5px;
     }
 
     .seat {
-        min-width: 28px;
-        min-height: 28px;
-        font-size: 0.8rem;
-        border-width: 1.5px;
+        min-width: 18px;
+        min-height: 18px;
+        font-size: 0.6rem;
+        border-width: 1px;
     }
 
     .row-label {
-        font-size: 0.75rem;
-        width: 12px;
-        margin-right: 3px;
+        font-size: 0.6rem;
+        width: 10px;
+        margin-right: 1px;
     }
 
     .section h3 {
@@ -656,22 +659,21 @@ h1 {
 
 @media (max-width: 360px) {
     .seating-plan {
-        transform: scale(0.95);
+        transform: scale(0.85);
     }
 
     .section {
-        transform: scale(0.95);
+        transform: scale(0.85);
     }
 
     .seats {
-        grid-template-columns: repeat(16, minmax(26px, 1fr));
-        gap: 1px;
+        grid-template-columns: repeat(16, minmax(16px, 1fr));
     }
 
     .seat {
-        min-width: 26px;
-        min-height: 26px;
-        font-size: 0.75rem;
+        min-width: 16px;
+        min-height: 16px;
+        font-size: 0.55rem;
     }
 }
 
