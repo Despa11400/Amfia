@@ -2,15 +2,5 @@
   "framework": "create-react-app",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "outputDirectory": "build",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "buildCommand": "npm run build",
-        "outputDirectory": "build"
-      }
-    }
-  ]
+  "outputDirectory": "build"
 }
