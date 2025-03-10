@@ -193,21 +193,34 @@ const TheaterBooking = () => {
 
         if (window.confirm('Да ли сте сигурни да желите да обришете све резервације? Ова акција се не може поништити.')) {
             try {
-                const { error } = await supabase
+                // First, get all seats to preserve their is_broken status
+                const { data: currentSeats, error: fetchError } = await supabase
                     .from('seats')
-                    .update({ 
-                        is_reserved: false,
-                        customer_name: null,
-                        student_id: null,
-                        faculty: null 
-                    });
+                    .select('*');
 
-                if (error) throw error;
+                if (fetchError) throw fetchError;
+
+                // Update each seat, preserving its is_broken status
+                const updates = currentSeats.map(seat => ({
+                    id: seat.id,
+                    is_reserved: false,
+                    customer_name: null,
+                    student_id: null,
+                    faculty: null,
+                    is_broken: seat.is_broken // Preserve the broken status
+                }));
+
+                const { error: updateError } = await supabase
+                    .from('seats')
+                    .upsert(updates);
+
+                if (updateError) throw updateError;
+                
                 alert('Све резервације су успешно обрисане!');
                 fetchSeats();
             } catch (error) {
                 console.error('Error clearing reservations:', error);
-                alert('Грешка при брисању резервација');
+                alert('Грешка при брисању резервација: ' + error.message);
             }
         }
     };
